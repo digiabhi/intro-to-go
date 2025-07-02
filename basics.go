@@ -2,23 +2,109 @@ package main
 
 import "fmt"
 
+type SellableProduct interface {
+	buy()
+	getDiscount() int
+}
+
+type Product struct {
+	name    string
+	price   int
+	company string
+}
+
+func newProduct(name string, price int, company string) *Product {
+	p := Product{
+		name:    name,
+		price:   price,
+		company: company,
+	}
+
+	// func newProduct(name string, price int, company string) Product
+	// return p // this is returning a copy of the product
+	return &p // this is returning a pointer to the product
+}
+
+func (p *Product) display(short bool) {
+	if short {
+		fmt.Println("Product:", p.name, "Price:", p.price)
+		return
+	}
+	fmt.Println("Product Details:")
+	fmt.Println("Name:", p.name)
+	fmt.Println("Price:", p.price)
+	fmt.Println("Company:", p.company)
+}
+
+func (p *Product) buy() {
+	fmt.Println("Buying product:", p.name)
+}
+
+func (p *Product) getDiscount() int {
+	discount := p.price * 10 / 100 // 10% discount
+	fmt.Println("Discount on product", p.name, "is:", discount)
+	return discount
+}
+
+func pass_by_value(copyOfP Product) {
+	copyOfP.name = "MacBook PRO"
+}
+
+func pass_by_reference(p *Product) {
+	p.name = "MacBook pro max"
+}
+
+func check_discount_and_buy(p SellableProduct) {
+	discount := p.getDiscount()
+	if discount > 30 {
+		fmt.Println("Discount is good, buying the product")
+		p.buy()
+		return
+	} else {
+		fmt.Println("Discount is not good, not buying the product")
+	}
+}
+
 func main() {
-	const availableStockCount int = 1000
-	var productName string = "Oneplus 11R"
-	var productPrice int = 35000
-	var companyName = "Oneplus"
 
-	category := "Smartphone"
+	product := Product{
+		name:    "Oneplus 11R",
+		price:   35000,
+		company: "Oneplus",
+	}
 
-	fmt.Println("Product name is", productName, "and its price is", productPrice, "INR.", "available at", companyName, "in the category of", category)
+	// fmt.Println("Product name is", p.name)
 
-	loops_demo()
-	arrays_demo()
-	maps_demo()
+	new_product := newProduct("Oneplus 11R", 35000, "Oneplus")
+	fmt.Println("Product name:", (*new_product).name) // dereferencing the pointer to access the name
+	fmt.Println("Product price:", new_product.price)  // accessing the price directly since new_product is a pointer
+	fmt.Println("Product company:", new_product.company)
+	new_product.display(true) // calling the display method on the product pointer
 
-	x, y := check_odd_even(10)
-	fmt.Println("The number is", x, "and the return value is", y)
-	demo_pointers()
+	pass_by_value(product)
+	fmt.Println("Product name after pass by copy:", product.name)
+
+	pass_by_reference(new_product)
+	fmt.Println("Product name after pass by reference:", new_product.name)
+
+	check_discount_and_buy(new_product)
+
+	// const availableStockCount int = 1000
+	// var productName string = "Oneplus 11R"
+	// var productPrice int = 35000
+	// var companyName = "Oneplus"
+
+	// category := "Smartphone"
+
+	// fmt.Println("Product name is", productName, "and its price is", productPrice, "INR.", "available at", companyName, "in the category of", category)
+
+	// loops_demo()
+	// arrays_demo()
+	// maps_demo()
+
+	// x, y := check_odd_even(10)
+	// fmt.Println("The number is", x, "and the return value is", y)
+	// demo_pointers()
 }
 
 func loops_demo() {
